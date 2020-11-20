@@ -15,19 +15,24 @@ exports.default = (ctx, pluginOpts) => {
             mockDir: joi.string(),
         });
     });
-    ctx.onBuildFinish(async () => {
-        const { appPath } = ctx.paths;
-        const port = pluginOpts.port || 9527;
-        const host = pluginOpts.host || '0.0.0.0';
-        const basePath = pluginOpts.basePath || '/';
-        const mockDir = pluginOpts.mockDir || 'mock';
-        await kill(port, 'tcp');
-        const app = express();
-        app.use(bodyParser.json());
-        app.use(mock_1.mockjsMiddleware(path.join(appPath, mockDir)));
-        app.listen(port, host, () => {
-            console.log(helper_1.chalk.green(`数据 mock 服务已启动，Server 地址 http://${host}:${port}${basePath}, mock文件夹为 ${path.join(appPath, mockDir)}`));
-        });
+    let isFirstWatch = true;
+    ctx.onBuildFinish(async ({ isWatch }) => {
+        let needStart = !isWatch || isFirstWatch;
+        if (needStart) {
+            const { appPath } = ctx.paths;
+            const port = pluginOpts.port || 9527;
+            const host = pluginOpts.host || '0.0.0.0';
+            const basePath = pluginOpts.basePath || '/';
+            const mockDir = pluginOpts.mockDir || 'mock';
+            await kill(port, 'tcp');
+            const app = express();
+            app.use(bodyParser.json());
+            app.use(mock_1.mockjsMiddleware(path.join(appPath, mockDir)));
+            app.listen(port, host, () => {
+                console.log(helper_1.chalk.green(`数据 mock 服务已启动，Server 地址 http://${host}:${port}${basePath}, mock文件夹为 ${path.join(appPath, mockDir)}`));
+            });
+        }
+        isFirstWatch = false;
     });
 };
 //# sourceMappingURL=index.js.map
