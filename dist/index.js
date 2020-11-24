@@ -29,7 +29,6 @@ $ TARO_MOCK=true taro build --type weapp --watch`));
         }
         let needStart = (!isWatch || isFirstWatch) && isMock;
         if (needStart) {
-            console.log(ctx.runOpts);
             const { appPath } = ctx.paths;
             const port = pluginOpts.port || 9527;
             const host = pluginOpts.host || '0.0.0.0';
