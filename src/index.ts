@@ -7,6 +7,11 @@ import { IPluginContext } from '@tarojs/service';
 import { chalk } from '@tarojs/helper';
 import { mockjsMiddleware } from './mock';
 
+function toBoolean(value: any): boolean {
+  const falsy = /^(?:f(?:alse)?|no?|0+)$/i;
+  return !falsy.test(value) && !!value;
+}
+
 export default (
   ctx: IPluginContext,
   pluginOpts: {
@@ -26,7 +31,18 @@ export default (
   });
   let isFirstWatch = true;
   ctx.onBuildFinish(async ({ isWatch }) => {
-    let needStart = !isWatch || isFirstWatch;
+    const isMock = toBoolean(process.env.TARO_MOCK);
+    if (!isMock && isFirstWatch) {
+      console.log(
+        chalk.yellow(
+          `Tips: 数据mock服务未启动，设置 TARO_MOCK 为 true 可以开启 mock。
+Example:
+$ TARO_MOCK=true taro build --type weapp --watch`
+        )
+      );
+    }
+
+    let needStart = (!isWatch || isFirstWatch) && isMock;
     if (needStart) {
       const { appPath } = ctx.paths;
       const port = pluginOpts.port || 9527;
@@ -40,7 +56,7 @@ export default (
       app.listen(port, host, () => {
         console.log(
           chalk.green(
-            `数据 mock 服务已启动，Server 地址 http://${host}:${port}${basePath}, mock文件夹为 ${path.join(
+            `数据mock服务已启动，Server 地址 http://${host}:${port}${basePath}, mock文件夹为 ${path.join(
               appPath,
               mockDir
             )}`
