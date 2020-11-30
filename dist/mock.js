@@ -2,7 +2,6 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.mockjsMiddleware = void 0;
 const Mockjs = require("mockjs");
-const bodyParser = require("body-parser");
 const utils_1 = require("./utils");
 function mockjsMiddleware(mockDir) {
     return (req, res, next) => {
@@ -38,20 +37,13 @@ function mockjsMiddleware(mockDir) {
                     req.params = params;
                     const { result } = mock;
                     if (typeof result === 'object') {
-                        bodyParser.json()(req, res, () => {
-                            res.json(Mockjs.mock(result));
-                        });
+                        return res.json(Mockjs.mock(result));
                     }
                     else if (typeof result === 'string') {
-                        bodyParser.text()(req, res, () => {
-                            res.send(Mockjs.mock(result));
-                        });
+                        return res.send(Mockjs.mock(result));
                     }
                     else if (typeof result === 'function') {
-                        result(req, res, next);
-                    }
-                    else {
-                        next();
+                        return result(req, res, next);
                     }
                 }
             }

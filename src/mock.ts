@@ -1,5 +1,4 @@
 import * as Mockjs from 'mockjs';
-import * as bodyParser from 'body-parser';
 
 import { Request, Response } from 'express';
 
@@ -40,17 +39,11 @@ export function mockjsMiddleware(mockDir: string) {
           req.params = params;
           const { result } = mock;
           if (typeof result === 'object') {
-            bodyParser.json()(req, res, () => {
-              res.json(Mockjs.mock(result));
-            });
+            return res.json(Mockjs.mock(result));
           } else if (typeof result === 'string') {
-            bodyParser.text()(req, res, () => {
-              res.send(Mockjs.mock(result));
-            });
+            return res.send(Mockjs.mock(result));
           } else if (typeof result === 'function') {
-            (result as Function)(req, res, next);
-          } else {
-            next();
+            return (result as Function)(req, res, next);
           }
         }
       }

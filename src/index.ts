@@ -51,6 +51,7 @@ $ TARO_MOCK=true taro build --type weapp --watch`
       const mockDir = pluginOpts.mockDir || 'mock';
       await kill(port, 'tcp');
       const app = express();
+      app.use(bodyParser.urlencoded({ extended: true }));
       app.use(bodyParser.json());
       app.use(mockjsMiddleware(path.join(appPath, mockDir)));
       app.listen(port, host, () => {
