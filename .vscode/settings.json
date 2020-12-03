@@ -8,5 +8,10 @@
     "source.organizeImports": true
   },
   "typescript.tsdk": "node_modules/typescript/lib",
-  "cSpell.words": ["mockjs"]
+  "cSpell.words": [
+    "mockjs"
+  ],
+  "files.watcherExclude": {
+    "**/target": true
+  }
 }

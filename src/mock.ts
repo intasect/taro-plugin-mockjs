@@ -25,7 +25,7 @@ export function mockjsMiddleware(mockDir: string) {
     for (const mock of mocks) {
       const { method, reg, keys } = mock;
       if (method.toUpperCase() === req.method.toUpperCase()) {
-        const match = reg.exec(req.path);
+        const match = reg.exec(req.originalUrl);
         if (match) {
           const params = {};
           for (let i = 0; i < keys.length; i++) {
@@ -48,6 +48,6 @@ export function mockjsMiddleware(mockDir: string) {
         }
       }
     }
-    next();
+    return res.status(404);
   };
 }
